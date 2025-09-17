@@ -9,17 +9,28 @@ import (
 	"time"
 )
 
-func note(noteName string) error {
+func note(noteName string, onlyList bool) error {
 	notesDir := getNotesDir()
 	if err := ensureNotesDir(notesDir); err != nil {
 		return fmt.Errorf("failed to get notes directory: %v", err)
 	}
-	editor := getEditor()
 	err := checkFzfInstalled()
 	if err != nil {
 		return err
 	}
 
+	if onlyList {
+		matches, err := getMatches(noteName)
+		if err != nil {
+			return fmt.Errorf("failed to list notes: %v", err)
+		}
+		for _, path := range sortFilesByDate(matches) {
+			fmt.Println(path)
+		}
+		return nil
+	}
+
+	editor := getEditor()
 	notePath, err := getNotePath(noteName, notesDir)
 	if err != nil {
 		// If error message is "not selection cancelled", we exit gracefully
@@ -73,14 +84,17 @@ func getAllNotePaths(directory string) ([]string, error) {
 		return nil, err
 	}
 
+	return sortFilesByDate(files), nil
+}
+
+func sortFilesByDate(files []string) []string {
 	filepaths := make([]string, 0, len(files))
 	for _, file := range files {
 		filepaths = append(filepaths, filepath.Base(file))
 	}
 	sortedFiles := ByDate(filepaths)
 	sort.Sort(sortedFiles)
-
-	return sortedFiles, nil
+	return sortedFiles
 }
 
 func getNotePath(noteName string, notesDir string) (string, error) {

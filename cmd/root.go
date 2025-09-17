@@ -7,6 +7,8 @@ import (
 	"strings"
 )
 
+var listFlag bool
+
 var rootCmd = &cobra.Command{
 	Use:   "note <note-name>",
 	Short: "Quick and easy note taking",
@@ -18,7 +20,7 @@ Uses the $NOTES_DIRECTORY environment variable to determine where to store notes
 		if len(args) > 0 {
 			noteName = strings.Join(args, " ")
 		}
-		err := note(noteName)
+		err := note(noteName, listFlag)
 		if err != nil {
 			// If error message is "not selection cancelled", we exit gracefully
 			if err.Error() == "note selection cancelled" {
@@ -31,7 +33,7 @@ Uses the $NOTES_DIRECTORY environment variable to determine where to store notes
 }
 
 func init() {
-
+	rootCmd.Flags().BoolVarP(&listFlag, "list", "l", false, "Just list notes, don't open editor")
 }
 
 func Execute() {

@@ -15,8 +15,9 @@ Download from [releases](https://github.com/ali-chapman/note/releases) and add t
 ## Usage
 
 ```bash
-note                    # List/search existing notes
+note                    # Search existing notes
 note "meeting notes"    # Create or edit a note
+note -l                 # Only list existing notes
 ```
 
 ## Requirements
